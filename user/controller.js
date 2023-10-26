@@ -6,33 +6,38 @@ const generateToken = require("../utils/generateToken.js");
 //  @Route  :  POST /users
 //  @access :  Public
 const registerUser = asyncHandler( async (req,res)=>{
-    const {username,email,password,country,type } = req.body
-    const userExist = await User.findOne({email})
-
-    if(userExist){
-        res.status(400)
-        throw new Error("User already exist");
-    }
-
-    const user = await User.create({
-        email, username , password, country, type
-    })
-
-    if(user){
-        const jwt = generateToken(user._id);
-        res.status(201).json({
-            email,
-            username , 
-            password, 
-            country, 
-            type,
-            jwt
+    try{
+        const {username,email,password,country,type } = req.body
+        const userExist = await User.findOne({email})
+    
+        if(userExist){
+            res.status(400)
+            throw new Error("User already exist");
+        }
+    
+        const user = await User.create({
+            email, username , password, country, type
         })
+    
+        if(user){
+            const jwt = generateToken(user._id);
+            res.status(200).json({
+                email,
+                username , 
+                password, 
+                country, 
+                type,
+                jwt
+            })
+        }
+        else{
+            res.status(400)
+            throw new Error("Invalid user data")
+        }
+    } catch(error){
+        console.log(error.message)
     }
-    else{
-        res.status(400)
-        throw new Error("Invalid user data")
-    }
+    
 })
 
 //  @desc   :  Login user
@@ -51,7 +56,7 @@ const loginUser = asyncHandler( async (req,res)=>{
     if (user && (await user.matchPassword(password))){
         const jwt = generateToken(user._id);
     
-        res.status(201).json({
+        res.status(200).json({
             _id: user._id,
             username: user.username,
             email: user.email,
