@@ -1,28 +1,35 @@
 const mongoose = require("mongoose");
 
-const messageSchema = mongoose.Schema({
+const messageSchema = mongoose.Schema(
+  {
     chatId: {
-        type: mongoose.Types.ObjectId,
-        ref: "Chats",
-        required:true
+      type: mongoose.Types.ObjectId,
+      ref: "Chats",
+      required: true,
     },
     senderId: {
-        type: mongoose.Types.ObjectId,
-        ref: "Users",
-        required: true
+      type: mongoose.Types.ObjectId,
+      ref: "Users",
+      required: true,
     },
     text: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     senderType: {
-        type: String,
-        required: true
-    }
-}, {
-    timestamps: true
-});
+      type: String,
+      required: true,
+    },
+    isFile: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const messageModel = mongoose.model("Messages", messageSchema);
 
-module.exports = messageModel
+module.exports = messageModel;

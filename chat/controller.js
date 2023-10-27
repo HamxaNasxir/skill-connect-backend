@@ -81,16 +81,34 @@ const findChat = asyncHandler(async (req, res) => {
 //  @Route  :  POST /chats/message
 //  @access :  Public
 const createMessage = asyncHandler(async (req, res) => {
-  const { chatId, senderId, text, senderType } = req.body;
-  const message = new MessageModel({
-    chatId,
-    senderId,
-    text,
-    senderType,
-  });
+  const { chatId, senderId, senderType } = req.body;
+  const text = req.body?.text;
+  const isFile = req.body?.isFile;
+  const file = req.file?.filename;
+
   try {
-    const result = await message.save();
-    res.status(200).json(result);
+    if (text) {
+      const message = new MessageModel({
+        chatId,
+        senderId,
+        text,
+        senderType,
+      });
+
+      const result = await message.save();
+      res.status(200).json(result);
+    } else {
+      const message = new MessageModel({
+        chatId,
+        senderId,
+        text: file,
+        senderType,
+        isFile: true,
+      });
+
+      const result = await message.save();
+      res.status(200).json(result);
+    }
   } catch (error) {
     if (error.name === "ValidationError") {
       // Customizing validation error message
