@@ -39,9 +39,8 @@ const createChat = asyncHandler(async (req, res) => {
 const userChat = asyncHandler(async(req,res) =>{
     try {
         const chat = await ChatModel.find({
-            // members:{ $in: [req.params.userId]}
+            members:{ $in: [req.params.userId]}
         }).populate("members")
-
 
         res.status(200).json(chat)
     } catch (error) {
@@ -51,7 +50,7 @@ const userChat = asyncHandler(async(req,res) =>{
 })
 
 
-//  @desc   :  Find User Chat
+//  @desc   :  Find User Chat - No USING IT
 //  @Route  :  GET /chats/find/:firstId/:secondId
 //  @access :  Public
 const findChat = asyncHandler(async(req, res) =>{
@@ -97,7 +96,7 @@ const getMessages = asyncHandler(async(req, res) => {
     const {chatId} = req.params;
 
     try {
-        const result = await MessageModel.find({chatId}).populate("senderId");
+        const result = await MessageModel.find({chatId}).populate({path:"senderId", select:"-password"});
         res.status(200).json(result);
     } catch (error) {
         res.status(500);
