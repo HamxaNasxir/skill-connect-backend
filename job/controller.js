@@ -3,8 +3,8 @@ const Job = require("./model");
 
 const createJob = asyncHandler(async (req, res) => {
   try {
-    const Profile = await Job.create({ ...req.body });
-    res.status(200).json(Profile);
+    const jobs = await Job.create({ ...req.body });
+    res.status(200).json(jobs);
   } catch (error) {
     if (error.name === "ValidationError") {
       // Customizing validation error message
@@ -15,6 +15,8 @@ const createJob = asyncHandler(async (req, res) => {
     res.status(500).json(error.message);
   }
 });
+
+const findJob = asyncHandler(async (req, res) => {});
 module.exports = {
   createJob,
 };
