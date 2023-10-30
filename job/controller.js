@@ -15,29 +15,32 @@ const createJob = asyncHandler(async (req, res) => {
   }
 });
 
-const getJoById = asyncHandler(async (req, res) => {
+const getJobById = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const jobs = await Job.findById(id);
-    if (jobs) {
-      res.status(200).json(jobs);
-    } else {
+    const jobs = await Job.findById(id).exec();
+
+    if(!jobs){
       res.status(500).json("Job not found.");
     }
+    
+    res.status(200).json(jobs);
   } catch (error) {
-    console.log(error.message);
+    res.status(500).json(error.message)
   }
 });
 
-const getJobsByUserID = asyncHandler(async (req, res) => {
+const getJobByUserID = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const jobs = await Job.find({ userId: id });
-    if (jobs) {
-      res.status(200).json(jobs);
-    } else {
+    const jobs = await Job.find({ userId: id }).sort({createdAt:-1}).exec();
+
+    if (!jobs) {
       res.status(500).json("No jobs found.");
+    } else {
     }
+
+    res.status(200).json(jobs);
   } catch (error) {
     console.log(error.message);
   }
@@ -45,6 +48,6 @@ const getJobsByUserID = asyncHandler(async (req, res) => {
 
 module.exports = {
   createJob,
-  getJoById,
-  getJobsByUserID,
+  getJobById,
+  getJobByUserID,
 };
