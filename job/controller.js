@@ -80,10 +80,24 @@ const updateJob = asyncHandler(async (req, res) => {
 //  @desc   :  Delete Job
 //  @Route  :  DELETE /jobs/:id
 //  @access :  Public
+const deleteJob = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+    const jobs = await Job.deleteOne({ _id: id });
+    if (!jobs) {
+      res.status(400);
+      throw new Error("Job not found.");
+    }
+    res.status(200).json("Job has been deleted.");
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+});
 
 module.exports = {
   createJob,
   getJobById,
   getJobByUserID,
   updateJob,
+  deleteJob,
 };
