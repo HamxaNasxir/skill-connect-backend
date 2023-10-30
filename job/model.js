@@ -1,28 +1,33 @@
 const mongoose = require("mongoose");
 
-const jobSchema = mongoose.Schema({
-  userId: {
-    type: mongoose.Types.ObjectId,
-    ref: "Users",
-  },
+const jobSchema = mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Users",
+    },
 
-  title: {
-    type: String,
-    required: true,
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    callDuration: {
+      type: String,
+    },
+    language: [],
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  callDuration: {
-    type: String,
-  },
-  language: [],
-});
+  {
+    timestamps: true,
+  }
+);
 
 const Job = mongoose.model("Jobs", jobSchema);
 
