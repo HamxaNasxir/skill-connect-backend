@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const ChatModel = require("./chatModel");
 const MessageModel = require("./messageModel");
+const createMessageNotification = require("../utils/createMessageNotification");
 
 // --------------------------------------- CHATS ------------------------------------------------------
 
@@ -81,7 +82,7 @@ const findChat = asyncHandler(async (req, res) => {
 //  @Route  :  POST /chats/message
 //  @access :  Public
 const createMessage = asyncHandler(async (req, res) => {
-  const { chatId, senderId, senderType } = req.body;
+  const { chatId, senderId, senderType, receiverId } = req.body;
   const text = req.body?.text;
   const isFile = req.body?.isFile;
   const file = req.file?.filename;
@@ -96,6 +97,7 @@ const createMessage = asyncHandler(async (req, res) => {
       });
 
       const result = await message.save();
+      createMessageNotification({chatId, senderId, receiverId})
       res.status(200).json(result);
     } else {
       const message = new MessageModel({
