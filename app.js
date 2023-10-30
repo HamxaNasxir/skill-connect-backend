@@ -23,6 +23,7 @@ const profileModule = require("./profile");
 const chatModule = require("./chat");
 const notificationModule = require("./notification");
 const jobModule = require("./job");
+const contractModule = require("./contract");
 
 var app = express();
 const server = require("http").createServer(app);
@@ -53,6 +54,7 @@ app.use("/profiles", profileModule);
 app.use("/chats", chatModule);
 app.use("/notifications", notificationModule);
 app.use("/jobs", jobModule);
+app.use("/contracts", contractModule);
 
 app.options("*", cors(corsOptions));
 
