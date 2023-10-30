@@ -11,6 +11,7 @@ require("dotenv").config();
 const database = require("./database/index.js");
 const cors = require("cors");
 const { notFound, errorHandler } = require("./middlewares/errorMiddlewares.js");
+const {socketServer} = require("./socketapi")
 
 // Routes Import
 // By default router Imports
@@ -23,6 +24,7 @@ const chatModule = require("./chat")
 
 var app = express();
 const server = require("http").createServer(app);
+socketServer(server)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
