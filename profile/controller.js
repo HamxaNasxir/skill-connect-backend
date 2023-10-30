@@ -41,6 +41,27 @@ const getProfiles = asyncHandler(async (req, res) => {
   }
 });
 
+const getProfileForHomePage = asyncHandler(async(req,res)=>{
+  const profiles=await Profile.find().populate("userId");
+  
+  const response = profiles.map(item => {
+    const languages = item.language.map(langObject => Object.keys(langObject)).flat();
+    const data = {
+      _id: item?._id,
+      username: item?.userId?.username,
+      location: item?.userId?.country,
+      budget: item?.rate,
+      languages,
+      project: 0,
+      rating: 0,
+      image:item?.picture ? `${process.env.IMAGE_URL}/${item?.picture}` :  null
+    };
+    return data;
+  });
+
+  res.status(200).json(response);
+})
+
 //  @desc   :  Update Profile
 //  @Route  :  PUT /profile/:id
 //  @access :  Public
@@ -80,6 +101,7 @@ const deleteProfile = asyncHandler(async (req, res) => {
 module.exports = {
   createProfile,
   getProfiles,
+  getProfileForHomePage,
   updateProfiles,
   deleteProfile,
 };

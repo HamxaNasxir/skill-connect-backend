@@ -7,12 +7,14 @@ const controller = require('./controller');
 const {
     createProfile,
     getProfiles,
+    getProfileForHomePage,
     updateProfiles,
     deleteProfile
 } = controller;
 
 // making the routes
 router.post('/',upload.single("picture"), createProfile);
+router.get("/home", getProfileForHomePage)
 router.route("/:id").get(getProfiles).put(upload.single("picture"), updateProfiles).delete(deleteProfile)
 
 
