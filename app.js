@@ -20,7 +20,8 @@ var indexRouter = require('./routes/index');
 // Static imports of routes
 const userModule = require("./user");
 const profileModule = require('./profile');
-const chatModule = require("./chat")
+const chatModule = require("./chat");
+const notificationModule = require("./notification");
 
 var app = express();
 const server = require("http").createServer(app);
@@ -50,6 +51,7 @@ app.use('/', indexRouter);
 app.use('/users', userModule);
 app.use('/profiles', profileModule);
 app.use('/chats', chatModule);
+app.use('/notifications', notificationModule);
 
 app.options('*', cors(corsOptions));
 
