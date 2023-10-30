@@ -5,10 +5,7 @@ const jobSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Users",
   },
-  senderId: {
-    type: [mongoose.Types.ObjectId],
-    ref: "Users",
-  },
+
   title: {
     type: String,
     required: true,
@@ -27,6 +24,6 @@ const jobSchema = mongoose.Schema({
   language: [],
 });
 
-const Job = mongoose.model("jobs", jobSchema);
+const Job = mongoose.model("Jobs", jobSchema);
 
 module.exports = Job;

@@ -16,7 +16,12 @@ const createJob = asyncHandler(async (req, res) => {
   }
 });
 
-const findJob = asyncHandler(async (req, res) => {});
+const findJobbyId = asyncHandler(async (req, res) => {
+  try {
+    // const id = req.params.id;
+    const jobs = await Job.findbyId(id);
+  } catch (error) {}
+});
 module.exports = {
   createJob,
 };
