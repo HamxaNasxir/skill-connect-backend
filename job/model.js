@@ -5,6 +5,10 @@ const jobSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Users",
   },
+  senderId: {
+    type: [mongoose.Types.ObjectId],
+    ref: "Users",
+  },
   title: {
     type: String,
     required: true,
