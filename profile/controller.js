@@ -41,6 +41,9 @@ const getProfiles = asyncHandler(async (req, res) => {
   }
 });
 
+//  @desc   :  Get Profile For HomePage of Client
+//  @Route  :  GET /profile/home
+//  @access :  Public
 const getProfileForHomePage = asyncHandler(async(req,res)=>{
   const profiles=await Profile.find().populate("userId");
   
@@ -53,7 +56,6 @@ const getProfileForHomePage = asyncHandler(async(req,res)=>{
       budget: item?.rate,
       languages,
       project: 0,
-      rating: 0,
       image:item?.picture ? `${process.env.IMAGE_URL}/${item?.picture}` :  null
     };
     return data;
