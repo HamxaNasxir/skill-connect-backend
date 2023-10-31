@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Contract = require("./model");
+const createInvitationNotification = require("../utils/createInvitationNotification");
+const contractDescisionNotification = require("../utils/contractDescisionNotification");
 
 //  @desc   :  Create Contract
 //  @Route  :  POST /contracts
@@ -12,6 +14,8 @@ const createContract = asyncHandler(async(req,res)=>{
     }
 
     const contract = await Contract.create({...req.body});
+
+    createInvitationNotification({jobId,clientId})
 
     res.status(200).json(contract);
 })
@@ -112,6 +116,8 @@ const contractDecision = asyncHandler(async(req, res)=>{
        }
     
         res.status(200).json(`Contract has been ${decision}`)
+
+        contractDescisionNotification({id, decision})
 
     } catch(error){
         res.status(500).json(error.message)
