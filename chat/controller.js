@@ -52,7 +52,7 @@ const userChat = asyncHandler(async (req, res) => {
   try {
     const chat = await ChatModel.find({
       members: { $in: [req.params.userId] },
-    }).populate("members");
+    }).populate({path:"members", select:"-password", populate:"profileId"});
 
     res.status(200).json(chat);
   } catch (error) {
@@ -133,7 +133,9 @@ const getMessages = asyncHandler(async (req, res) => {
     const result = await MessageModel.find({ chatId }).populate({
       path: "senderId",
       select: "-password",
+      populate:"profileId"
     });
+    
     res.status(200).json(result);
   } catch (error) {
     res.status(500);

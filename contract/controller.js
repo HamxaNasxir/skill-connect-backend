@@ -88,7 +88,7 @@ const getContractByUserID = asyncHandler(async(req, res)=>{
 //  @access :  Public
 const getInvitations = asyncHandler(async(req,res)=>{
     try{
-        const invitations = await Contract.find({status:"Pending"}).populate({path:"clientId", select:"-password"}).populate({path:"jobId", populate:{path:"userId", select:"-password"}}).sort({createdAt:-1}).exec()
+        const invitations = await Contract.find({status:"Pending"}).populate({path:"clientId", select:"-password", populate:"profileId"}).populate({path:"jobId", populate:{path:"userId", select:"-password",  populate:"profileId"}}).sort({createdAt:-1}).exec()
     
         const count = await Contract.countDocuments({status:"Pending"});
     

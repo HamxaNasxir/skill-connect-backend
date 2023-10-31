@@ -24,6 +24,11 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
+    },
+    profileId:{
+      type: mongoose.Types.ObjectId,
+      ref: "Profiles",
+      default:null
     }
   },
   {

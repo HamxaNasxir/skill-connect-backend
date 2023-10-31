@@ -1,13 +1,16 @@
 const asyncHandler = require("express-async-handler");
 const Profile = require("./model");
+const User = require("../user/model")
 const Contract = require("../contract/model")
 
 //  @desc   :  Create Profile
 //  @Route  :  POST /profile
 //  @access :  Public
 const createProfile = asyncHandler(async (req, res) => {
+  const {userId} = req.body
   try {
     const picture = req.file?.filename;
+    console.log("Picture :", picture)
 
     const newProfile = new Profile({
       ...req.body,
@@ -15,6 +18,9 @@ const createProfile = asyncHandler(async (req, res) => {
     });
 
     const result = await newProfile.save();
+
+    await User.updateOne({_id:userId},{profileId:result?._id},{new:true});
+    
     res.status(200).json(result);
   } catch (error) {
     if (error.name === "ValidationError") {

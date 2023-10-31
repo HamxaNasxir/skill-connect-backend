@@ -43,14 +43,13 @@ const getJobById = asyncHandler(async (req, res) => {
 const getJobByUserID = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const jobs = await Job.findOne({ userId: id }).populate({path:"userId", select:"-password"}).sort({ createdAt: -1 }).exec();
-    const profile = await Profile.findOne({userId: id}).exec();
+    const jobs = await Job.findOne({ userId: id }).populate({path:"userId", select:"-password", populate:"profileId"}).sort({ createdAt: -1 }).exec();
 
     if (!jobs) {
       res.status(500).json("No jobs found.");
     }
 
-    res.status(200).json({job: jobs, profile});
+    res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json(error.message);
   }
