@@ -23,6 +23,7 @@ const createContract = asyncHandler(async(req,res)=>{
 const getContract = asyncHandler(async (req, res) => {
     const { status } = req.params;
 
+
     let filterStatus;
 
     switch (status) {
@@ -36,7 +37,7 @@ const getContract = asyncHandler(async (req, res) => {
             filterStatus = 'Rejected';
             break;
         default:
-            return res.status(400).json({ error: 'Invalid status parameter' });
+            return res.status(400).json('Invalid status parameter');
     }
 
     try {
@@ -62,6 +63,25 @@ const getContract = asyncHandler(async (req, res) => {
 });
 
 
+//  @desc   :  Get Contract By UserId and ClientId
+//  @Route  :  GET /contracts/:userId/:clientId
+//  @access :  Public
+const getContractByUserID = asyncHandler(async(req, res)=>{
+    const userId = req.params.userId;
+    const clientId = req.params.clientId // ClientId is of translator
+
+    try{
+        const contract = await Contract.find({status:"Pending"}).populate({path:"jobId", populate: "userId"}).sort({createdAt:-1}).exec();
+    
+        const filteredContract = contract.filter((item)=> item?.clientId == clientId && item?.jobId?.userId?._id == userId)
+    
+        res.status(200).json(filteredContract)
+
+    } catch(error){
+        return res.status(500).json(error.message)
+    }
+
+})
 
 //  @desc   :  Get Invitations
 //  @Route  :  GET /contracts
@@ -103,5 +123,6 @@ module.exports = {
     createContract,
     getContract,
     contractDecision,
-    getInvitations
+    getInvitations,
+    getContractByUserID
 }

@@ -6,10 +6,12 @@ const {
 createContract,
 getContract,
 contractDecision,
-getInvitations
+getInvitations,
+getContractByUserID
 } = controller;
 
 router.route("/").get(getInvitations).post(createContract).put(contractDecision);
 router.get("/:status",getContract)
+router.get("/chat/:userId/:clientId",getContractByUserID)
 
 module.exports = router;
