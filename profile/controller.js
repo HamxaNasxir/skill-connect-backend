@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Profile = require("./model");
+const Contract = require("../contract/model")
 
 //  @desc   :  Create Profile
 //  @Route  :  POST /profile
@@ -44,25 +45,32 @@ const getProfiles = asyncHandler(async (req, res) => {
 //  @desc   :  Get Profile For HomePage of Client
 //  @Route  :  GET /profile/home
 //  @access :  Public
-const getProfileForHomePage = asyncHandler(async(req,res)=>{
-  const profiles=await Profile.find().populate("userId");
+const getProfileForHomePage = asyncHandler(async (req, res) => {
+  try {
+    const profiles = await Profile.find().populate("userId");
+    const responseData = await Promise.all(profiles.map(async (item) => {
+      const languages = item.language.map(langObject => Object.keys(langObject)).flat();
+      const contract = await Contract.countDocuments({ clientId: item?.userId?._id, status: "Completed" });
   
-  const response = profiles.map(item => {
-    const languages = item.language.map(langObject => Object.keys(langObject)).flat();
-    const data = {
-      _id: item?._id,
-      username: item?.userId?.username,
-      location: item?.userId?.country,
-      budget: item?.rate,
-      languages,
-      project: 0,
-      image:item?.picture ? `${process.env.IMAGE_URL}/${item?.picture}` :  null
-    };
-    return data;
-  });
+      const data = {
+        _id: item?._id,
+        username: item?.userId?.username,
+        location: item?.userId?.country,
+        budget: item?.rate || null,
+        languages,
+        project: contract,
+        image: item?.picture ? `${process.env.IMAGE_URL}/${item?.picture}` : null
+      };
+      return data;
+    }));
 
-  res.status(200).json(response);
-})
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error.message);
+  }
+});
+
 
 //  @desc   :  Update Profile
 //  @Route  :  PUT /profile/:id
