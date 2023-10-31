@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Job = require("./model");
+const Profile = require("../profile/model");
 
 //  @desc   :  Create Job
 //  @Route  :  POST /jobs
@@ -42,14 +43,14 @@ const getJobById = asyncHandler(async (req, res) => {
 const getJobByUserID = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const jobs = await Job.find({ userId: id }).sort({ createdAt: -1 }).exec();
+    const jobs = await Job.findOne({ userId: id }).populate({path:"userId", select:"-password"}).sort({ createdAt: -1 }).exec();
+    const profile = await Profile.findOne({userId: id}).exec();
 
     if (!jobs) {
       res.status(500).json("No jobs found.");
-    } else {
     }
 
-    res.status(200).json(jobs);
+    res.status(200).json({job: jobs, profile});
   } catch (error) {
     res.status(500).json(error.message);
   }
