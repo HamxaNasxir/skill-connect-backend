@@ -4,10 +4,12 @@ const controller = require("./controller");
 
 const {
 createContract,
-getContract
+getContract,
+contractDecision,
+getInvitations
 } = controller;
 
-router.post("/", createContract);
+router.route("/").get(getInvitations).post(createContract).put(contractDecision);
 router.get("/:status",getContract)
 
 module.exports = router;

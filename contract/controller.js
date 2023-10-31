@@ -18,17 +18,90 @@ const createContract = asyncHandler(async(req,res)=>{
 
 
 //  @desc   :  Get Contract By Status
-//  @Route  :  POST /contracts
+//  @Route  :  GET /contracts/:status
 //  @access :  Public
-const getContract = asyncHandler(async(req,res)=>{
-    const status = req.params.status;
+const getContract = asyncHandler(async (req, res) => {
+    const { status } = req.params;
 
-    const contract = await Contract.find({status}).populate({path:"clientId", select:"-passwrord"}).populate({path:"jobId", populate:{path:"userId", select:"-password"}}).sort({createdAt:-1}).exec();
+    let filterStatus;
 
-    res.status(200).json(contract);
+    switch (status) {
+        case 'Invitations':
+            filterStatus = 'Accept';
+            break;
+        case 'Completed':
+            filterStatus = 'Completed';
+            break;
+        case 'Rejected':
+            filterStatus = 'Rejected';
+            break;
+        default:
+            return res.status(400).json({ error: 'Invalid status parameter' });
+    }
+
+    try {
+        const contracts = await Contract.find({ status: filterStatus })
+            .populate({
+                path: 'clientId',
+                select: '-password'
+            })
+            .populate({
+                path: 'jobId',
+                populate: {
+                    path: 'userId',
+                    select: '-password'
+                }
+            })
+            .sort({ createdAt: -1 })
+            .exec();
+
+        res.status(200).json(contracts);
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+});
+
+
+
+//  @desc   :  Get Invitations
+//  @Route  :  GET /contracts
+//  @access :  Public
+const getInvitations = asyncHandler(async(req,res)=>{
+    try{
+        const invitations = await Contract.find({status:"Pending"}).populate({path:"clientId", select:"-password"}).populate({path:"jobId", populate:{path:"userId", select:"-password"}}).sort({createdAt:-1}).exec()
+    
+        const count = await Contract.countDocuments({status:"Pending"});
+    
+        res.status(200).json({data: invitations, count})
+    } catch(error){
+        res.status(500).json(error.message)
+    }
+})
+
+//  @desc   :  Accept or reject Invitation
+//  @Route  :  PUT /contracts
+//  @access :  Public
+const contractDecision = asyncHandler(async(req, res)=>{
+    const {id, decision} = req.body;
+
+    try{
+       const updatedContract = await Contract.updateOne({_id:id},{status:decision},{new:true});
+
+       if(!updatedContract){
+        return res.status(404).json('Contract not found')
+       }
+    
+        res.status(200).json(`Contract has been ${decision}`)
+
+    } catch(error){
+        res.status(500).json(error.message)
+    }
+
 })
 
 module.exports = {
     createContract,
-    getContract
+    getContract,
+    contractDecision,
+    getInvitations
 }

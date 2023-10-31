@@ -11,7 +11,7 @@ const contractSchema = new mongoose.Schema({
     },
     status:{
         type:String,
-        default: "Invitations"
+        default: "Pending"
     }
 },{
     timestamps:true
