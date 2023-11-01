@@ -24,6 +24,7 @@ const chatModule = require("./chat");
 const notificationModule = require("./notification");
 const jobModule = require("./job");
 const contractModule = require("./contract");
+const settingModule = require("./settings");
 
 var app = express();
 const server = require("http").createServer(app);
@@ -55,6 +56,7 @@ app.use("/chats", chatModule);
 app.use("/notifications", notificationModule);
 app.use("/jobs", jobModule);
 app.use("/contracts", contractModule);
+app.use("/settings", settingModule);
 
 app.options("*", cors(corsOptions));
 
