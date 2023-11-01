@@ -65,7 +65,7 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
         budget: item?.rate || null,
         languages,
         project: contract,
-        image: item?.picture ? `${process.env.IMAGE_URL}/${item?.picture}` : null
+        image: item?.picture || null
       };
       return data;
     }));
