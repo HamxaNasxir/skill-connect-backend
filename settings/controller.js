@@ -29,7 +29,7 @@ const getContactInfo = asyncHandler(async (req, res) => {
 });
 
 //  @desc   :  Update Contact Information
-//  @Route  :  GET /settings/contact
+//  @Route  :  PUT /settings/contact
 //  @access :  Public
 const updateContactInfo = asyncHandler(async (req, res) => {
   const { userId, username, email, contact, address, country } = req.body;
@@ -55,7 +55,7 @@ const updateContactInfo = asyncHandler(async (req, res) => {
 
     await User.updateOne({ _id: userId }, { $set: update }, { new: true });
 
-    res.status(200).json("updated");
+    res.status(200).json("Contact Info has been updated");
   } catch (error) {
     res.status(500).json(error.message);
   }
