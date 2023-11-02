@@ -77,31 +77,35 @@ const loginUser = asyncHandler(async (req, res) => {
 const signInWithGoogle = asyncHandler(async (req, res) => {
     const { username, email, type } = req.body;
 
-    const userExist = await User.findOne({ email });
-
-    if (userExist) {
-        const jwt = generateToken(userExist._id);
-        res.status(409).json({
-            _id: userExist._id,
-            email,
-            username,
-            type,
-            jwt
-        })
-    } else {
-        const user = await User.create({
-            email, username, type
-        })
-
-        const jwt = generateToken(user._id);
-
-        res.status(200).json({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            type: user.type,
-            jwt
-        });
+    try{
+        const userExist = await User.findOne({ email });
+    
+        if (userExist) {
+            const jwt = generateToken(userExist._id);
+            res.status(409).json({
+                _id: userExist._id,
+                email,
+                username,
+                type,
+                jwt
+            })
+        } else {
+            const user = await User.create({
+                email, username, type
+            })
+    
+            const jwt = generateToken(user._id);
+    
+            res.status(200).json({
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                type: user.type,
+                jwt
+            });
+        }
+    } catch(error){
+        return res.status(500).json(error.message)
     }
 })
 
