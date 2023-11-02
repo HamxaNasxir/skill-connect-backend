@@ -37,13 +37,13 @@ const getJobById = asyncHandler(async (req, res) => {
   }
 });
 
-//  @desc   :  Get Job By UserId
+//  @desc   :  Get Job By UserId, This will use as to show client the past projects of translator
 //  @Route  :  GET /jobs/user/:id
 //  @access :  Public
 const getJobByUserID = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const jobs = await Job.findOne({ userId: id }).populate({path:"userId", select:"-password", populate:"profileId"}).sort({ createdAt: -1 }).exec();
+    const jobs = await Job.find({ userId: id }).populate({path:"userId", select:"-password", populate:"profileId"}).sort({ createdAt: -1 }).exec();
 
     if (!jobs) {
       res.status(500).json("No jobs found.");
