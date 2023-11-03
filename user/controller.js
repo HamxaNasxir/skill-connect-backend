@@ -36,7 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
             throw new Error("Invalid user data")
         }
     } catch (error) {
-        console.log(error.message)
+        return res.status(500).json(error.message)
     }
 
 })
