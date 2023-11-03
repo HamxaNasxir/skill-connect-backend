@@ -13,9 +13,9 @@ const createJob = asyncHandler(async (req, res) => {
     if (error.name === "ValidationError") {
       // Customizing validation error message
       const errorMessage = Object.values(error.errors)[0].message;
-      return res.status(400).json({ error: errorMessage });
+      return res.status(400).json(errorMessage);
     }
-    console.log(error.message);
+    return res.status(500).json(error.message);
   }
 });
 

@@ -26,10 +26,10 @@ const createProfile = asyncHandler(async (req, res) => {
     if (error.name === "ValidationError") {
       // Customizing validation error message
       const errorMessage = Object.values(error.errors)[0].message;
-      return res.status(400).json({ error: errorMessage });
+      return res.status(400).json(errorMessage);
     }
     // Handle other types of errors
-    res.status(500).json({ error: error.message });
+    res.status(500).json(error.message);
   }
 });
 
