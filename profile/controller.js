@@ -37,7 +37,22 @@ const createProfile = asyncHandler(async (req, res) => {
 //  @Route  :  GET /profile/:id
 //  @access :  Public
 const getProfiles = asyncHandler(async (req, res) => {
-  const userId = req.params.id;
+  const id = req.params.id;
+
+  const userProfile = await Profile.findById(id).exec();
+
+  if (userProfile) {
+    res.status(200).json(userProfile);
+  } else {
+    res.status(500).json("Profile Not Found");
+  }
+});
+
+//  @desc   :  Get Profile
+//  @Route  :  GET /profile/:id
+//  @access :  Public
+const getProfileByUserId = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
 
   const userProfile = await Profile.findOne({userId}).exec();
 
@@ -55,13 +70,15 @@ const getProfiles = asyncHandler(async (req, res) => {
 const getUserDetail = asyncHandler(async(req, res)=>{
   const userId = req.params.userId
 
-  const profile = await Profile.findOne({'userId._id':userId}).populate({path:'userId', select:"-password"}).exec();
+  const profile = await Profile.find().populate({path:'userId', select:"-password"}).exec();
+
+  const filteredProfile = profile?.filter(items => items?.userId?._id == userId);
 
   const filteredFields = {
-    _id: profile?._id,
-    location: profile?.userId?.country,
-    image: profile?.picture || null,
-    name : `${profile?.firstname} ${profile?.lastname}`
+    _id: filteredProfile[0]?._id,
+    location: filteredProfile[0]?.userId?.country,
+    image: filteredProfile[0]?.picture || null,
+    name : `${filteredProfile[0]?.firstname} ${filteredProfile[0]?.lastname}`
   }
 
   res.status(200).json(filteredFields)
@@ -139,5 +156,6 @@ module.exports = {
   getProfileForHomePage,
   updateProfiles,
   deleteProfile,
-  getUserDetail
+  getUserDetail,
+  getProfileByUserId
 };

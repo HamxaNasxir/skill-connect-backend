@@ -10,13 +10,15 @@ const {
     getProfileForHomePage,
     updateProfiles,
     deleteProfile,
-    getUserDetail
+    getUserDetail,
+    getProfileByUserId
 } = controller;
 
 // making the routes
 router.post('/',upload.single("picture"), createProfile);
 router.get("/home", getProfileForHomePage)
 router.get("/setting/:userId", getUserDetail)
+router.get("/user/:userId", getProfileByUserId)
 router.route("/:id").get(getProfiles).put(upload.single("picture"), updateProfiles).delete(deleteProfile)
 
 
