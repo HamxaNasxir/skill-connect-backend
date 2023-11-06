@@ -37,9 +37,9 @@ const createProfile = asyncHandler(async (req, res) => {
 //  @Route  :  GET /profile/:id
 //  @access :  Public
 const getProfiles = asyncHandler(async (req, res) => {
-  const id = req.params.id;
+  const userId = req.params.id;
 
-  const userProfile = await Profile.findById(id).exec();
+  const userProfile = await Profile.findOne({userId}).exec();
 
   if (userProfile) {
     res.status(200).json(userProfile);
