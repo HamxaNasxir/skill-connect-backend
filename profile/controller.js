@@ -48,6 +48,25 @@ const getProfiles = asyncHandler(async (req, res) => {
   }
 });
 
+
+//  @desc   :  Get User Detail For Setting Top Part
+//  @Route  :  GET /profile/setting/:id
+//  @access :  Public
+const getUserDetail = asyncHandler(async(req, res)=>{
+  const userId = req.params.userId
+
+  const profile = await Profile.findOne({'userId._id':userId}).populate({path:'userId', select:"-password"}).exec();
+
+  const filteredFields = {
+    _id: profile?._id,
+    location: profile?.userId?.country,
+    image: profile?.picture || null,
+    name : `${profile?.firstname} ${profile?.lastname}`
+  }
+
+  res.status(200).json(filteredFields)
+})
+
 //  @desc   :  Get Profile For HomePage of Client
 //  @Route  :  GET /profile/home
 //  @access :  Public
@@ -120,4 +139,5 @@ module.exports = {
   getProfileForHomePage,
   updateProfiles,
   deleteProfile,
+  getUserDetail
 };
