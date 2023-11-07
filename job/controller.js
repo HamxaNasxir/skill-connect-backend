@@ -55,6 +55,31 @@ const getJobByUserID = asyncHandler(async (req, res) => {
   }
 });
 
+//  @desc   :  Get Job Title By UserId, This will use as to show client the past projects of translator
+//  @Route  :  GET /jobs/title/:id
+//  @access :  Public
+const getJobTitleByUserID = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+    const jobs = await Job.find({ userId: id }).populate({path:"userId", select:"-password", populate:"profileId"}).sort({ createdAt: -1 }).exec();
+
+    if (!jobs) {
+      res.status(500).json("No jobs found.");
+    }
+
+    const filteredJob = jobs?.map(items => {
+      return {
+        _id: items?._id,
+        title: items?.title
+      }
+    })
+
+    res.status(200).json(filteredJob);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+});
+
 //  @desc   :  Update Job
 //  @Route  :  PUT /jobs/:id
 //  @access :  Public
@@ -98,6 +123,7 @@ module.exports = {
   createJob,
   getJobById,
   getJobByUserID,
+  getJobTitleByUserID,
   updateJob,
   deleteJob,
 };
