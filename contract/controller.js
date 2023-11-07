@@ -109,7 +109,7 @@ const contractDecision = asyncHandler(async(req, res)=>{
     const {id, decision} = req.body;
 
     try{
-       const updatedContract = await Contract.updateOne({_id:id},{status:decision},{new:true});
+       const updatedContract = await Contract.updateOne({jobId:id},{status:decision},{new:true});
 
        if(!updatedContract){
         return res.status(404).json('Contract not found')

@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Job = require("./model");
-const Profile = require("../profile/model");
+const Contract = require("../contract/model");
 
 //  @desc   :  Create Job
 //  @Route  :  POST /jobs
@@ -25,13 +25,24 @@ const createJob = asyncHandler(async (req, res) => {
 const getJobById = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    const jobs = await Job.findById(id).exec();
+    const jobs = await Job.findById(id).populate({path:"userId", select:"-password"}).exec();
 
+    
     if (!jobs) {
       res.status(500).json("Job not found.");
     }
 
-    res.status(200).json(jobs);
+    const allJobs = await Job.find({userId:jobs?.userId?._id}).exec()
+
+    const filteredJobId = allJobs?.map(items => items?._id)
+
+    const contract = await Contract.countDocuments({ $and :[{jobId : {$in : filteredJobId}}, {status: "Completed"}]})
+
+    const responseData = {
+      ...jobs._doc, project: contract
+    }
+
+    res.status(200).json(responseData);
   } catch (error) {
     res.status(500).json(error.message);
   }
