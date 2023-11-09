@@ -88,13 +88,14 @@ const getContractByUserID = asyncHandler(async(req, res)=>{
 })
 
 //  @desc   :  Get Invitations
-//  @Route  :  GET /contracts
+//  @Route  :  GET /contracts/:id
 //  @access :  Public
 const getInvitations = asyncHandler(async(req,res)=>{
+    const id = req.params.id
     try{
-        const invitations = await Contract.find({status:"Pending"}).populate({path:"clientId", select:"-password", populate:"profileId"}).populate({path:"jobId", populate:{path:"userId", select:"-password",  populate:"profileId"}}).sort({createdAt:-1}).exec()
+        const invitations = await Contract.find({status:"Pending", clientId:id}).populate({path:"clientId", select:"-password", populate:"profileId"}).populate({path:"jobId", populate:{path:"userId", select:"-password",  populate:"profileId"}}).sort({createdAt:-1}).exec()
     
-        const count = await Contract.countDocuments({status:"Pending"});
+        const count = await Contract.countDocuments({status:"Pending", clientId:id});
     
         res.status(200).json({data: invitations, count})
     } catch(error){
@@ -109,7 +110,7 @@ const contractDecision = asyncHandler(async(req, res)=>{
     const {id, decision} = req.body;
 
     try{
-       const updatedContract = await Contract.updateOne({jobId:id},{status:decision},{new:true});
+       const updatedContract = await Contract.updateOne({_id:id},{status:decision},{new:true});
 
        if(!updatedContract){
         return res.status(404).json('Contract not found')

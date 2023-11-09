@@ -10,7 +10,8 @@ getInvitations,
 getContractByUserID
 } = controller;
 
-router.route("/").get(getInvitations).post(createContract).put(contractDecision);
+router.route("/").post(createContract).put(contractDecision);
+router.get("/:id", getInvitations)
 router.get("/:status",getContract)
 router.get("/chat/:userId/:clientId",getContractByUserID)
 
