@@ -12,7 +12,7 @@ getContractByUserID
 
 router.route("/").post(createContract).put(contractDecision);
 router.get("/:id", getInvitations)
-router.get("/:status",getContract)
+router.get("/:status/:id",getContract)
 router.get("/chat/:userId/:clientId",getContractByUserID)
 
 module.exports = router;

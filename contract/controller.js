@@ -22,10 +22,10 @@ const createContract = asyncHandler(async(req,res)=>{
 
 
 //  @desc   :  Get Contract By Status
-//  @Route  :  GET /contracts/:status
+//  @Route  :  GET /contracts/:status/:id
 //  @access :  Public
 const getContract = asyncHandler(async (req, res) => {
-    const { status } = req.params;
+    const { status,id } = req.params;
 
 
     let filterStatus;
@@ -45,7 +45,7 @@ const getContract = asyncHandler(async (req, res) => {
     }
 
     try {
-        const contracts = await Contract.find({ status: filterStatus })
+        const contracts = await Contract.find({ status: filterStatus, clientId: id })
             .populate({
                 path: 'clientId',
                 select: '-password'
