@@ -38,11 +38,12 @@ const getContract = asyncHandler(async (req, res) => {
             filterStatus = 'Completed';
             break;
         case 'Rejected':
-            filterStatus = 'Rejected';
+            filterStatus = 'Reject';
             break;
         default:
             return res.status(400).json('Invalid status parameter');
     }
+
 
     try {
         const contracts = await Contract.find({ status: filterStatus, clientId: id })
