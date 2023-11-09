@@ -96,6 +96,7 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
   
       const data = {
         _id: item?._id,
+        userId: item?.userId?._id,
         username: item?.userId?.username,
         location: item?.userId?.country,
         budget: item?.rate || null,
