@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Contract = require("./model");
 const createInvitationNotification = require("../utils/createInvitationNotification");
 const contractDescisionNotification = require("../utils/contractDescisionNotification");
+const getUserType = require("../utils/getUserType");
 
 //  @desc   :  Create Contract
 //  @Route  :  POST /contracts
@@ -46,7 +47,29 @@ const getContract = asyncHandler(async (req, res) => {
 
 
     try {
-        const contracts = await Contract.find({ status: filterStatus, clientId: id })
+        const isClient = await getUserType(id);
+
+        if(isClient){
+            const contracts = await Contract.find({ status: filterStatus })
+            .populate({
+                path: 'clientId',
+                select: '-password'
+            })
+            .populate({
+                path: 'jobId',
+                populate: {
+                    path: 'userId',
+                    select: '-password'
+                }
+            })
+            .sort({ createdAt: -1 })
+            .exec();
+
+            const filteredContract = contracts.filter(items => items?.jobId?.userId?._id == id);
+
+            res.status(200).json(filteredContract);
+        } else {
+            const contracts = await Contract.find({ status: filterStatus, clientId: id })
             .populate({
                 path: 'clientId',
                 select: '-password'
@@ -62,6 +85,8 @@ const getContract = asyncHandler(async (req, res) => {
             .exec();
 
         res.status(200).json(contracts);
+        }
+        
     } catch (error) {
         res.status(500).json(error.message);
     }
