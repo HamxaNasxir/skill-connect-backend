@@ -91,7 +91,6 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
   try {
     const profiles = await Profile.find().populate("userId");
     const responseData = await Promise.all(profiles.map(async (item) => {
-      const languages = item.language.map(langObject => Object.keys(langObject)).flat();
       const contract = await Contract.countDocuments({ clientId: item?.userId?._id, status: "Completed" });
   
       const data = {
@@ -100,7 +99,7 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
         username: item?.userId?.username,
         location: item?.userId?.country,
         budget: item?.rate || null,
-        languages,
+        languages: item?.language || null,
         project: contract,
         image: item?.picture || null
       };
