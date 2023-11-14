@@ -99,7 +99,7 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
         username: item?.userId?.username,
         location: item?.userId?.country,
         budget: item?.rate || null,
-        languages: item?.language || null,
+        language: item?.language || null,
         project: contract,
         image: item?.picture || null
       };
