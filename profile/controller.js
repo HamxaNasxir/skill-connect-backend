@@ -10,8 +10,6 @@ const createProfile = asyncHandler(async (req, res) => {
   const {userId} = req.body
   try {
     // const picture = req.file?.filename;
-    console.log("Picture :", picture)
-
     const newProfile = new Profile({
       ...req.body
     });
@@ -19,6 +17,35 @@ const createProfile = asyncHandler(async (req, res) => {
     //   ...req.body,
     //   picture,
     // });
+
+    const result = await newProfile.save();
+
+    await User.updateOne({_id:userId},{profileId:result?._id},{new:true});
+    
+    res.status(200).json(result);
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      // Customizing validation error message
+      const errorMessage = Object.values(error.errors)[0].message;
+      return res.status(400).json(errorMessage);
+    }
+    // Handle other types of errors
+    res.status(500).json(error.message);
+  }
+});
+
+//  @desc   :  Create Profile Image Test
+//  @Route  :  POST /profile/test
+//  @access :  Public
+const createProfileImageTest = asyncHandler(async (req, res) => {
+  const {userId} = req.body
+  try {
+    const picture = req.file?.filename;
+
+    const newProfile = new Profile({
+      ...req.body,
+      picture,
+    });
 
     const result = await newProfile.save();
 
@@ -142,6 +169,29 @@ const updateProfiles = asyncHandler(async (req, res) => {
   res.status(200).json("Profile has been updated!");
 });
 
+//  @desc   :  Update Profile
+//  @Route  :  PUT /profile/test/:id
+//  @access :  Public
+const updateProfilesImageTest = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const picture = req.file?.filename;
+
+  const profile = await Profile.updateOne(
+    { _id: id },
+    {
+      $set: { ...req.body, picture },
+    },
+    { new: true }
+  );
+
+  if (!profile) {
+    res.status(400);
+    throw new Error("Profile Not Found");
+  }
+
+  res.status(200).json("Profile has been updated!");
+});
+
 //  @desc   :  Delete Profile
 //  @Route  :  DELETE /profile/:id
 //  @access :  Public
@@ -162,5 +212,7 @@ module.exports = {
   updateProfiles,
   deleteProfile,
   getUserDetail,
-  getProfileByUserId
+  getProfileByUserId,
+  createProfileImageTest,
+  updateProfilesImageTest
 };

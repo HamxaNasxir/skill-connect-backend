@@ -11,15 +11,18 @@ const {
     updateProfiles,
     deleteProfile,
     getUserDetail,
-    getProfileByUserId
+    getProfileByUserId,
+    createProfileImageTest,
+    updateProfilesImageTest
 } = controller;
 
 // making the routes
 router.post('/', createProfile);
-// router.post('/',upload.single("picture"), createProfile);
+router.post('/test',upload.single("picture"), createProfileImageTest); //new route for testing
 router.get("/home", getProfileForHomePage)
 router.get("/setting/:userId", getUserDetail)
 router.get("/user/:userId", getProfileByUserId)
+router.put("/test/:id",upload.single("picture"), updateProfilesImageTest) // new route for testing
 router.route("/:id").get(getProfiles).put(updateProfiles).delete(deleteProfile)
 // router.route("/:id").get(getProfiles).put(upload.single("picture"), updateProfiles).delete(deleteProfile)
 
