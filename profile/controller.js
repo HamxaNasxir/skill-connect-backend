@@ -9,13 +9,16 @@ const Contract = require("../contract/model")
 const createProfile = asyncHandler(async (req, res) => {
   const {userId} = req.body
   try {
-    const picture = req.file?.filename;
+    // const picture = req.file?.filename;
     console.log("Picture :", picture)
 
     const newProfile = new Profile({
-      ...req.body,
-      picture,
+      ...req.body
     });
+    // const newProfile = new Profile({
+    //   ...req.body,
+    //   picture,
+    // });
 
     const result = await newProfile.save();
 
@@ -120,12 +123,13 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
 //  @access :  Public
 const updateProfiles = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  const picture = req.file?.filename;
+  // const picture = req.file?.filename;
 
   const profile = await Profile.updateOne(
     { _id: id },
     {
-      $set: { ...req.body, picture },
+      $set: { ...req.body },
+      // $set: { ...req.body, picture },
     },
     { new: true }
   );
