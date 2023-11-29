@@ -82,11 +82,11 @@ const signInWithGoogle = asyncHandler(async (req, res) => {
     
         if (userExist) {
             const jwt = generateToken(userExist._id);
-            res.status(409).json({
+            res.status(200).json({
                 _id: userExist._id,
-                email,
-                username,
-                type,
+                email: userExist?.email,
+                username: userExist?.username,
+                type: userExist?.type,
                 jwt
             })
         } else {

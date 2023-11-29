@@ -49,12 +49,31 @@ const createChat = asyncHandler(async (req, res) => {
 //  @Route  :  GET /chats/:userId
 //  @access :  Public
 const userChat = asyncHandler(async (req, res) => {
-  try {
+  try { 
+    let filterChat;
     const chat = await ChatModel.find({
       members: { $in: [req.params.userId] },
     }).populate({path:"members", select:"-password", populate:"profileId"});
 
-    res.status(200).json(chat);
+    if(chat){
+      const chatIdArray = chat?.map(items => items._id);
+      
+
+      filterChat = await Promise.all(
+        chatIdArray?.map(async (chatId) => {
+          const lastMessage = await MessageModel.findOne({ chatId })
+            .sort({ createdAt: -1 }); // Sort in descending order based on createdAt
+            
+            return {
+              chat: chat.find(item => item._id.equals(chatId)),
+              lastMessage: lastMessage || null,
+            };
+        })
+      );
+
+    }
+    
+    res.status(200).json(filterChat);
   } catch (error) {
     res.status(500);
     throw new Error(error.message);
