@@ -43,6 +43,10 @@ const corsOptions = {
 app.use(logger("dev"));
 app.use(express.json({ limit: "10gb" }));
 app.use(cors(corsOptions));
+app.use(function (req, res, next) {
+  res.header("Content-Type", 'application/json');
+  next();
+});
 app.use(express.urlencoded({ limit: "10gb", extended: true }));
 app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "public/images")));
