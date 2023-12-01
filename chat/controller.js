@@ -64,9 +64,11 @@ const userChat = asyncHandler(async (req, res) => {
           const lastMessage = await MessageModel.findOne({ chatId })
             .sort({ createdAt: -1 }); // Sort in descending order based on createdAt
             
+            const unread = await MessageModel.countDocuments({chatId, receiverId: req.params.userId, isRead: "false"})
             return {
               chat: chat.find(item => item._id.equals(chatId)),
               lastMessage: lastMessage || null,
+              unread: unread || 0,
             };
         })
       );
@@ -101,7 +103,7 @@ const findChat = asyncHandler(async (req, res) => {
 //  @Route  :  POST /chats/message
 //  @access :  Public
 const createMessage = asyncHandler(async (req, res) => {
-  const { chatId, senderId, senderType, receiverId } = req.body;
+  const { chatId, senderId, senderType, receiverId, isRead } = req.body;
   const text = req.body?.text;
   const isFile = req.body?.isFile;
   const file = req.file?.filename;
@@ -113,6 +115,8 @@ const createMessage = asyncHandler(async (req, res) => {
         senderId,
         text,
         senderType,
+        receiverId,
+        isRead
       });
 
       const result = await message.save();
@@ -125,6 +129,8 @@ const createMessage = asyncHandler(async (req, res) => {
         text: file,
         senderType,
         isFile: true,
+        receiverId,
+        isRead
       });
 
       const result = await message.save();
@@ -162,10 +168,52 @@ const getMessages = asyncHandler(async (req, res) => {
   }
 });
 
+
+//  @desc   :  Update Unread Messages
+//  @Route  :  PUT /chats/update/:chatId/:userId
+//  @access :  Public
+const updateUnread = asyncHandler(async(req,res)=>{
+  try{
+    const receiverId = req.params.userId;
+    const chatId = req.params.chatId;
+
+    await MessageModel.updateMany({ receiverId,chatId }, { $set: { isRead: "true" } });
+    res.status(200).json("unRead updated");
+
+  } catch(error){
+    res.status(500);
+    throw new Error(error.message);
+  }
+})
+
+//  @desc   :  Its updating the isRead true when receiverId is in the chat
+//  @Route  :  PUT /chats/read/:messageId/:userId
+//  @access :  Public
+const markAsRead = asyncHandler(async(req,res)=>{
+  try{
+    const receiverId = req.params.userId;
+    const messageId = req.params.messageId;
+
+    const response = await MessageModel.updateOne({ receiverId,_id:messageId }, { $set: { isRead: "true" } });
+    
+    if(response?.modifiedCount > 0){
+      res.status(200).json("Mark as read");
+    } else {
+      res.status(200).json("userId is not as receiverId");
+    }
+
+  } catch(error){
+    res.status(500);
+    throw new Error(error.message);
+  }
+})
+
 module.exports = {
   createChat,
   findChat,
   userChat,
   getMessages,
   createMessage,
+  updateUnread,
+  markAsRead
 };

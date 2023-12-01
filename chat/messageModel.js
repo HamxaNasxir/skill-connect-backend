@@ -12,6 +12,11 @@ const messageSchema = mongoose.Schema(
       ref: "Users",
       required: true,
     },
+    receiverId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Users",
+      required: true,
+    },
     text: {
       type: String,
       required: true,
@@ -23,6 +28,10 @@ const messageSchema = mongoose.Schema(
     isFile: {
       type: Boolean,
       default: false,
+    },
+    isRead: {
+      type: String,
+      default: "false",
     },
   },
   {
