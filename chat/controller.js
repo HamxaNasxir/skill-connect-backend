@@ -55,7 +55,20 @@ const userChat = asyncHandler(async (req, res) => {
       members: { $in: [req.params.userId] },
     }).populate({path:"members", select:"-password", populate:"profileId"});
 
+
     if(chat){
+
+      // Loop through each object in the data array
+      for (const obj of chat) {
+        // Find the index of the user in the members array of the current object
+        const userIndex = obj.members.findIndex(member => member._id == req.params.userId);
+  
+        // If the user is found, remove them from the members array
+        if (userIndex !== -1) {
+            obj.members.splice(userIndex, 1);
+        }
+      }
+
       const chatIdArray = chat?.map(items => items._id);
       
 
