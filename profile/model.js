@@ -44,7 +44,8 @@ const profileSchema = mongoose.Schema({
     },
     description:{
         type:String
-    }
+    },
+    experience: []
 
 
 },{
