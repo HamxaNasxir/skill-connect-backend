@@ -18,6 +18,9 @@ let socketServer = function (server) {
       activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
       console.log("user Disconnected", activeUsers);
 
+      // For ending video call
+      socket.broadcast.emit("callEnded")
+
       io.emit("get-users", activeUsers);
     });
 
@@ -36,7 +39,23 @@ let socketServer = function (server) {
       if (user) {
       io.to(user.socketId).emit("receive-notification", data);
       }
-  })
+    })
+
+    // ********************** For video call *********************
+    // For sending Id to copy
+    socket.emit('myId', socket.id)
+
+    // For answering the Calling of a user
+    socket.on("answerCall", (data) => {
+      io.to(data.to).emit("callAccepted", data.signal)
+    });
+
+    // For calling to user
+    socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+      io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+    });
+
+
   });
 };
 
