@@ -5,6 +5,7 @@ let socketServer = function (server) {
   io.on("connection", function (socket) {
     // Add new user
     socket.on("new-user-add", (newUserId) => {
+      console.log(activeUsers)
       //if user is not added previously
       if (!activeUsers.some((user) => user.userId === newUserId)) {
         activeUsers.push({ userId: newUserId, socketId: socket.id });
@@ -52,7 +53,11 @@ let socketServer = function (server) {
 
     // For calling to user
     socket.on("callUser", ({ userToCall, signalData, from, name }) => {
-      io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+      console.log({ userToCall, signalData, from, name })
+      const userToCallSocektId = activeUsers.filter(item => item.userId === userToCall);
+      if(userToCallSocektId){
+        io.to(userToCallSocektId).emit("callUser", { signal: signalData, from, name });
+      }
     });
 
 

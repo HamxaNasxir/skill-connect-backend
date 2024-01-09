@@ -75,7 +75,7 @@ app.use(errorHandler); // Place errorHandler before notFound
 // Middleware for handling 404 errors (Note: This should be after the error handler)
 app.use(notFound);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
