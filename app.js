@@ -25,6 +25,7 @@ const notificationModule = require("./notification");
 const jobModule = require("./job");
 const contractModule = require("./contract");
 const settingModule = require("./settings");
+const videoModule = require("./VideoCall")
 
 var app = express();
 const server = require("http").createServer(app);
@@ -61,6 +62,7 @@ app.use("/notifications", notificationModule);
 app.use("/jobs", jobModule);
 app.use("/contracts", contractModule);
 app.use("/settings", settingModule);
+app.use("/call", videoModule)
 
 app.options("*", cors(corsOptions));
 
