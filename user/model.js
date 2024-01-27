@@ -31,7 +31,15 @@ const userSchema = mongoose.Schema(
     isActive: {
       type: Boolean,
       deafult:false
-    }
+    },
+    lat:{
+      type: String,
+      default: null
+    },
+    long:{
+      type: String,
+      default: null
+    },
   },
   {
     timestamps: true,

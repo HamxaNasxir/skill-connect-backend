@@ -7,7 +7,8 @@ const {
     registerUser,
     loginUser,
     signInWithGoogle,
-    logoutUser
+    logoutUser,
+    updateLocation
 } = controller;
 
 // making the routes
@@ -15,5 +16,6 @@ router.post("/", registerUser);
 router.post("/login", loginUser);
 router.post("/google", signInWithGoogle);
 router.put("/logout/:userId", logoutUser);
+router.put("/location", updateLocation);
 
 module.exports = router;

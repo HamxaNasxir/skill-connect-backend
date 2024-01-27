@@ -134,10 +134,33 @@ const logoutUser = asyncHandler(async (req, res) => {
     }
 })
 
+//  @desc   :  Update Long and Lat
+//  @Route  :  PUT /users/location
+//  @access :  Public
+const updateLocation = asyncHandler(async (req, res) => {
+    try {
+        const {userId, lat, long} = req.body;
+
+        // Update the isActive to false when logging out.
+        const user = await User.findOneAndUpdate({ _id: userId }, { lat, long }, { new: true });
+
+        // Provide feedback to the user in the response.
+        res.status(200).json({
+            message: 'Longitude and Latitude is updated',
+            lat,
+            long
+        });
+    } catch (error) {
+        res.status(401);
+        throw new Error(error?.message);
+    }
+})
+
 //  Exporting the routes
 module.exports = {
     registerUser,
     loginUser,
     signInWithGoogle,
-    logoutUser
+    logoutUser,
+    updateLocation
 }
