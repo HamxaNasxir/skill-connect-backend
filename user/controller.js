@@ -141,7 +141,7 @@ const updateLocation = asyncHandler(async (req, res) => {
     try {
         const {userId, lat, long} = req.body;
 
-        // Update the isActive to false when logging out.
+        // Update the location
         const user = await User.findOneAndUpdate({ _id: userId }, { lat, long }, { new: true });
 
         // Provide feedback to the user in the response.
@@ -184,7 +184,7 @@ const updateStripeCard = asyncHandler(async (req, res) => {
     try {
         const {userId, stripeCard} = req.body;
 
-        // Update the address
+        // Update the stripe
         const user = await User.findOneAndUpdate({ _id: userId }, { stripeCard }, { new: true });
 
         // Provide feedback to the user in the response.
