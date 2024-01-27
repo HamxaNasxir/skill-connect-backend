@@ -57,11 +57,14 @@ const loginUser = asyncHandler(async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         const jwt = generateToken(user._id);
 
+        // Update the isActive true when login.
+        await User.findOneAndUpdate({email}, {isActive: true}, {new:true});
         res.status(200).json({
             _id: user._id,
             username: user.username,
             email: user.email,
             type: user.type,
+            isActive: user.isActive,
             jwt
         });
     } else {
@@ -109,9 +112,32 @@ const signInWithGoogle = asyncHandler(async (req, res) => {
     }
 })
 
+//  @desc   :  Logout user
+//  @Route  :  PUT /users/logout/:userId
+//  @access :  Public
+const logoutUser = asyncHandler(async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Update the isActive to false when logging out.
+        const user = await User.findOneAndUpdate({ _id: userId }, { isActive: false }, { new: true });
+
+        // Provide feedback to the user in the response.
+        res.status(200).json({
+            message: 'User logged out successfully',
+            id: user._id,
+            isActive: user.isActive
+        });
+    } catch (error) {
+        res.status(401);
+        throw new Error(error?.message);
+    }
+})
+
 //  Exporting the routes
 module.exports = {
     registerUser,
     loginUser,
-    signInWithGoogle
+    signInWithGoogle,
+    logoutUser
 }

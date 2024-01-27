@@ -27,6 +27,10 @@ const userSchema = mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Profiles",
       default:null
+    }, 
+    isActive: {
+      type: Boolean,
+      deafult:false
     }
   },
   {
