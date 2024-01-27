@@ -58,13 +58,13 @@ const loginUser = asyncHandler(async (req, res) => {
         const jwt = generateToken(user._id);
 
         // Update the isActive true when login.
-        await User.findOneAndUpdate({email}, {isActive: true}, {new:true});
+        const updatedUser = await User.findOneAndUpdate({email}, {isActive: true}, {new:true});
         res.status(200).json({
             _id: user._id,
             username: user.username,
             email: user.email,
             type: user.type,
-            isActive: user.isActive,
+            isActive: updatedUser?.isActive,
             jwt
         });
     } else {
