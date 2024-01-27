@@ -156,11 +156,33 @@ const updateLocation = asyncHandler(async (req, res) => {
     }
 })
 
+//  @desc   :  Update Addres
+//  @Route  :  PUT /users/address
+//  @access :  Public
+const updateAddress = asyncHandler(async (req, res) => {
+    try {
+        const {userId, address} = req.body;
+
+        // Update the address
+        const user = await User.findOneAndUpdate({ _id: userId }, { address }, { new: true });
+
+        // Provide feedback to the user in the response.
+        res.status(200).json({
+            message: 'Address is updated',
+            address: user?.address
+        });
+    } catch (error) {
+        res.status(401);
+        throw new Error(error?.message);
+    }
+})
+
 //  Exporting the routes
 module.exports = {
     registerUser,
     loginUser,
     signInWithGoogle,
     logoutUser,
-    updateLocation
+    updateLocation,
+    updateAddress
 }

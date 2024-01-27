@@ -40,6 +40,14 @@ const userSchema = mongoose.Schema(
       type: String,
       default: null
     },
+    address:{
+      type: String,
+      default: null
+    },
+    stripeCard:{
+      type: String,
+      default: null
+    }
   },
   {
     timestamps: true,
