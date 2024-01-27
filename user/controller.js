@@ -177,6 +177,27 @@ const updateAddress = asyncHandler(async (req, res) => {
     }
 })
 
+//  @desc   :  Update Stripe Card
+//  @Route  :  PUT /users/card
+//  @access :  Public
+const updateStripeCard = asyncHandler(async (req, res) => {
+    try {
+        const {userId, stripeCard} = req.body;
+
+        // Update the address
+        const user = await User.findOneAndUpdate({ _id: userId }, { stripeCard }, { new: true });
+
+        // Provide feedback to the user in the response.
+        res.status(200).json({
+            message: 'Stripe Card is updated',
+            stripeCard: user?.stripeCard
+        });
+    } catch (error) {
+        res.status(401);
+        throw new Error(error?.message);
+    }
+})
+
 //  Exporting the routes
 module.exports = {
     registerUser,
@@ -184,5 +205,6 @@ module.exports = {
     signInWithGoogle,
     logoutUser,
     updateLocation,
-    updateAddress
+    updateAddress,
+    updateStripeCard
 }

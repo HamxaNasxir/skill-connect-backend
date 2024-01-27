@@ -9,7 +9,8 @@ const {
     signInWithGoogle,
     logoutUser,
     updateLocation,
-    updateAddress
+    updateAddress,
+    updateStripeCard
 } = controller;
 
 // making the routes
@@ -19,5 +20,6 @@ router.post("/google", signInWithGoogle);
 router.put("/logout/:userId", logoutUser);
 router.put("/location", updateLocation);
 router.put("/address", updateAddress);
+router.put("/card", updateStripeCard);
 
 module.exports = router;
