@@ -69,7 +69,7 @@ const createProfileImageTest = asyncHandler(async (req, res) => {
 const getProfiles = asyncHandler(async (req, res) => {
   const id = req.params.id;
 
-  const userProfile = await Profile.findById(id).exec();
+  const userProfile = await Profile.findById(id).populate('userId').exec();
 
   if (userProfile) {
     res.status(200).json(userProfile);
@@ -127,6 +127,8 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
       const data = {
         _id: item?._id,
         userId: item?.userId?._id,
+        address: item?.address || null,
+        isActive: item?.userId?.isActive || false,
         username: item?.userId?.username,
         location: item?.userId?.country,
         budget: item?.rate || null,
