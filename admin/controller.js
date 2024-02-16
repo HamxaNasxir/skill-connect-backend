@@ -138,6 +138,23 @@ const updatePayment = asyncHandler(async (req, res) => {
 });
 
 
+const ViewClearedPayment = asyncHandler(async (req, res) => {
+    try {
+
+        const clearedPayments = await Payment.find({ status: 'clear' })
+        .populate({
+            path: 'userId',
+            model: 'Users',
+        })
+        .exec();
+        res.status(200).json({
+            clearedPayments
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 module.exports = {
     getAllClient,
@@ -145,5 +162,6 @@ module.exports = {
     deleteUser,
     updateUser,
     getTranslatorCard,
-    updatePayment
+    updatePayment,
+    ViewClearedPayment
 }

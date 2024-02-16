@@ -8,7 +8,8 @@ getAllTranslator,
 deleteUser,
 updateUser,
 getTranslatorCard,
-updatePayment
+updatePayment,
+ViewClearedPayment
 } = controller;
 
 // router.route("/").post(createContract).put(contractDecision);
@@ -18,6 +19,9 @@ router.get("/payment", getTranslatorCard);
 router.delete("/user/:id", deleteUser);
 router.put("/user/:id", updateUser);
 router.put("/payment/:id", updatePayment);
+
+////
+router.get("/admin/clearhistory", ViewClearedPayment);
 // router.get("/:status/:id",getContract)
 // router.get("/chat/:userId/:clientId",getContractByUserID)
 
