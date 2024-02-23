@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Profile = require("./model");
 const User = require("../user/model")
 const Contract = require("../contract/model")
+const ChatModel = require("../chat/chatModel");
 
 //  @desc   :  Create Profile
 //  @Route  :  POST /profile
@@ -207,6 +208,35 @@ const deleteProfile = asyncHandler(async (req, res) => {
   }
 });
 
+//  @desc   :  Get All User Phone , UserId and ChatId for Group call filteration in frontend side
+//  @Route  :  GET /profile/alluser/:id
+//  @access :  Public
+const getAllUser = asyncHandler(async (req,res)=>{
+  try{
+    const currentUserId = req.params.id;
+
+    const allUser = await Profile.find({userId:{$exists: true}, contact:{$exists: true}},{userId:1 , contact:1, _id:0}).lean();
+
+    const finalData = await Promise.all(allUser?.map(async (item) => {
+      const chat = await ChatModel.findOne({
+        members: { $all: [currentUserId, item?.userId] }
+      }).lean();
+    
+      return {
+        userId: item?.userId ||  null,
+        contact: item?.contact || null,
+        chatId: chat ? chat._id : null
+      };
+    }));
+    
+
+    return res.status(200).json({data:allUser})
+
+  } catch(error){
+    return res.status(500).json({Error:error.message})
+  }
+})
+
 module.exports = {
   createProfile,
   getProfiles,
@@ -216,5 +246,6 @@ module.exports = {
   getUserDetail,
   getProfileByUserId,
   createProfileImageTest,
-  updateProfilesImageTest
+  updateProfilesImageTest,
+  getAllUser
 };
