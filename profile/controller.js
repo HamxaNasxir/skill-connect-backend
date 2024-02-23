@@ -215,7 +215,7 @@ const getAllUser = asyncHandler(async (req,res)=>{
   try{
     const currentUserId = req.params.id;
 
-    const allUser = await Profile.find({userId:{$exists: true, $ne: currentUserId}, contact:{$exists: true}},{userId:1 , contact:1, _id:0}).lean();
+    const allUser = await Profile.find({userId:{$exists: true, $ne: currentUserId}, contact:{$exists: true}},{userId:1 , contact:1, lastname:1, firstname:1, _id:0}).lean();
 
     const finalData = await Promise.all(allUser?.map(async (item) => {
       const chat = await ChatModel.findOne({
@@ -224,6 +224,8 @@ const getAllUser = asyncHandler(async (req,res)=>{
     
       return {
         userId: item?.userId ||  null,
+        firstname: item?.firstname || null,
+        lastname: item?.lastname || null,
         contact: item?.contact || null,
         chatId: chat ? chat._id : null
       };
