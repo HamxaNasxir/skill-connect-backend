@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema(
     },
     type : {
         type: String,
-        enum: ["translator", "client" , "admin"],
+        enum: ["translator", "client" , "admin", "guest"],
         required: true,
     },
     country : {
