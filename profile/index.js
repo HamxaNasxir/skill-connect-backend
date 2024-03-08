@@ -23,7 +23,7 @@ router.post('/test',upload.single("picture"), createProfileImageTest); //new rou
 router.get("/home", getProfileForHomePage)
 router.get("/setting/:userId", getUserDetail)
 router.get("/user/:userId", getProfileByUserId)
-router.get("/alluser/:id", getAllUser)
+router.get("/alluser", getAllUser)
 router.put("/test/:id",upload.single("picture"), updateProfilesImageTest) // new route for testing
 router.route("/:id").get(getProfiles).put(updateProfiles).delete(deleteProfile)
 // router.route("/:id").get(getProfiles).put(upload.single("picture"), updateProfiles).delete(deleteProfile)

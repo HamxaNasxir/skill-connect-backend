@@ -101,8 +101,8 @@ function socketServer(server) {
         }
     });
 
-    // store this in redis or an appropriate db
-    let users = [];
+    // Store users and their rooms
+    let users = {};
 
     // Function to handle socket events
     io.on('connection', (socket) => {
@@ -111,56 +111,70 @@ function socketServer(server) {
         socket.join(socket.user);
 
         // notify this user of online users
-        io.to(socket.user).emit("new-users", { users });
+        io.to(socket.user).emit("new-users", { users: Object.keys(users) });
 
         // notify existent users that a new user just joined
-        if (!users.includes(socket.user)) {
-            users.forEach(user => {
-                io.to(user).emit("new-user", { user: socket.user });
-            });
-            users.push(socket.user);
-        }
+        Object.keys(users).forEach(user => {
+            io.to(user).emit("new-user", { user: socket.user });
+        });
+        users[socket.user] = socket.id;
 
         // Define socket event handlers
         socket.on('start-call', ({ to }) => {
             console.log("initiating call request to ", to);
-            io.to(to).emit("incoming-call", { from: socket.user });
+            io.to(users[to]).emit("incoming-call", { from: socket.user });
         });
 
         socket.on("accept-call", ({ to }) => {
             console.log("call accepted by ", socket.user, " from ", to);
-            io.to(to).emit("call-accepted", { to });
+            io.to(users[to]).emit("call-accepted", { to });
         });
 
         socket.on("deny-call", ({ to }) => {
             console.log("call denied by ", socket.user, " from ", to);
-            io.to(to).emit("call-denied", { to });
+            io.to(users[to]).emit("call-denied", { to });
         });
 
         socket.on("leave-call", ({ to }) => {
             console.log("left call message by ", socket.user, " from ", to);
-            io.to(to).emit("left-call", { to });
+            io.to(users[to]).emit("left-call", { to });
         });
 
         socket.on("offer", ({ to, offer }) => {
             console.log("offer from ", socket.user, " to ", to);
-            io.to(to).emit("offer", { to, offer });
+            io.to(users[to]).emit("offer", { to, offer });
         });
 
         socket.on("offer-answer", ({ to, answer }) => {
             console.log("offer answer from ", socket.user, " to ", to);
-            io.to(to).emit("offer-answer", { to, answer });
+            io.to(users[to]).emit("offer-answer", { to, answer });
         });
 
         socket.on("ice-candidate", ({ to, candidate }) => {
             console.log("ice candidate from ", socket.user, " to ", to);
-            io.to(to).emit("ice-candidate", { to, candidate });
+            io.to(users[to]).emit("ice-candidate", { to, candidate });
+        });
+
+        socket.on("join-call", ({ callId }) => {
+            // Check if the call exists and the user has permission to join
+            if (users.hasOwnProperty(callId)) {
+                console.log("4545" ,callId )
+                // Broadcast to all users in the call room to add the new user
+                io.to(callId).emit("user-joined-call", { user: socket.user });
+                // Notify the new user that they have successfully joined the call
+                io.to(socket.user).emit("joined-call", { callId });
+                // Add the new user to the call room
+                socket.join(callId);
+            } else {
+                // Notify the user that the call does not exist or they don't have permission to join
+                io.to(socket.user).emit("call-not-found", { callId });
+            }
         });
 
         socket.on("disconnect", (reason) => {
-            users = users.filter(u => u !== socket.user);
-            users.forEach(user => {
-                io.to(user).emit("user-left", { user: socket.user });
+            delete users[socket.user];
+            Object.keys(users).forEach(user => {
+                io.to(users[user]).emit("user-left", { user: socket.user });
             });
             console.log("a socket disconnected ", socket.user);
         });
@@ -168,5 +182,7 @@ function socketServer(server) {
 }
 
 module.exports = { socketServer };
+
+
 
 

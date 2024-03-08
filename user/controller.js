@@ -177,6 +177,21 @@ const updateAddress = asyncHandler(async (req, res) => {
     }
 })
 
+const GetAllUsers = asyncHandler(async (req, res) => {
+    try {
+        const {userId, address} = req.body;
+
+        // Update the address
+        const user = await User.find({});
+
+        // Provide feedback to the user in the response.
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(401);
+        throw new Error(error?.message);
+    }
+})
+
 //  @desc   :  Update Stripe Card
 //  @Route  :  PUT /users/card
 //  @access :  Public
@@ -206,5 +221,6 @@ module.exports = {
     logoutUser,
     updateLocation,
     updateAddress,
-    updateStripeCard
+    updateStripeCard,
+    GetAllUsers
 }

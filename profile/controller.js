@@ -213,29 +213,13 @@ const deleteProfile = asyncHandler(async (req, res) => {
 //  @access :  Public
 const getAllUser = asyncHandler(async (req,res)=>{
   try{
-    const currentUserId = req.params.id;
+   
 
-    const allUser = await Profile.find({userId:{$exists: true, $ne: currentUserId}, contact:{$exists: true}},{userId:1 , contact:1, lastname:1, firstname:1, _id:0}).populate('userId').lean();
+    const allUser = await Profile.find({ contact:{$exists: true, $ne: null}},{userId:1 , contact:1, lastname:1, firstname:1, _id:0}).populate('userId').lean();
+  
+  
 
-    const allUserFiltered = await allUser?.filter(item=>item?.userId?.type === 'guest');
-
-    const finalData = await Promise.all(allUserFiltered?.map(async (item) => {
-      const chat = await ChatModel.findOne({
-        members: { $all: [currentUserId, item?.userId] }
-      }).lean();
-    
-      return {
-        userId: item?.userId?._id ||  null,
-        type: item?.userId?.type,
-        firstname: item?.firstname || null,
-        lastname: item?.lastname || null,
-        contact: item?.contact || null,
-        chatId: chat ? chat._id : null
-      };
-    }));
-    
-
-    return res.status(200).json({data:finalData})
+    return res.status(200).json({allUser})
 
   } catch(error){
     return res.status(500).json({Error:error.message})

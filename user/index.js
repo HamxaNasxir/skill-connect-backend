@@ -10,7 +10,8 @@ const {
     logoutUser,
     updateLocation,
     updateAddress,
-    updateStripeCard
+    updateStripeCard,
+    GetAllUsers
 } = controller;
 
 // making the routes
@@ -21,5 +22,6 @@ router.put("/logout/:userId", logoutUser);
 router.put("/location", updateLocation);
 router.put("/address", updateAddress);
 router.put("/card", updateStripeCard);
+router.get("/allusers", GetAllUsers);
 
 module.exports = router;
