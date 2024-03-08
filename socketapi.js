@@ -155,21 +155,22 @@ function socketServer(server) {
             io.to(users[to]).emit("ice-candidate", { to, candidate });
         });
 
-        socket.on("join-call", ({ callId }) => {
+        socket.on("join-call", ({ callId, usersToAdd }) => {
             // Check if the call exists and the user has permission to join
             if (users.hasOwnProperty(callId)) {
-                console.log("4545" ,callId )
                 // Broadcast to all users in the call room to add the new user
-                io.to(callId).emit("user-joined-call", { user: socket.user });
-                // Notify the new user that they have successfully joined the call
-                io.to(socket.user).emit("joined-call", { callId });
-                // Add the new user to the call room
-                socket.join(callId);
+                usersToAdd.forEach(user => {
+                    io.to(users[user]).emit("user-joined-call", { user: socket.user });
+                    socket.join(callId);
+                });
+                // Notify the new users that they have successfully joined the call
+                io.to(usersToAdd).emit("joined-call", { callId });
             } else {
                 // Notify the user that the call does not exist or they don't have permission to join
                 io.to(socket.user).emit("call-not-found", { callId });
             }
         });
+        
 
         socket.on("disconnect", (reason) => {
             delete users[socket.user];
