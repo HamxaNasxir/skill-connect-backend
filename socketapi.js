@@ -80,6 +80,97 @@
 // socketapi.js
 // socketapi.js
 
+// const { Server } = require("socket.io");
+
+// function socketServer(server) {
+//     const io = new Server(server, {
+//         cors: {
+//             origin: "*",
+//             methods: ["GET", "POST"]
+//         }
+//     });
+
+//     // Middleware to handle socket authentication
+//     io.use((socket, next) => {
+//         if (socket.handshake.query?.callerId) {
+//             socket.user = socket.handshake.query.callerId;
+//             next();
+//         } else {
+//             console.log("No token found");
+//             next(new Error("No token found"));
+//         }
+//     });
+
+//     // Store users and their rooms
+//     let users = {};
+
+//     // Function to handle socket events
+//     io.on('connection', (socket) => {
+//         console.log("new connection on socket server user is ", socket.user);
+
+//         socket.join(socket.user);
+
+//         // notify this user of online users
+//         io.to(socket.user).emit("new-users", { users: Object.keys(users) });
+
+//         // notify existent users that a new user just joined
+//         Object.keys(users).forEach(user => {
+//             io.to(user).emit("new-user", { user: socket.user });
+//         });
+//         users[socket.user] = socket.id;
+
+//         // Define socket event handlers
+//         socket.on('start-call', ({ to }) => {
+//             console.log("initiating call request to ", to);
+//             io.to(users[to]).emit("incoming-call", { from: socket.user });
+//         });
+
+//         socket.on("accept-call", ({ to }) => {
+//             console.log("call accepted by ", socket.user, " from ", to);
+//             io.to(users[to]).emit("call-accepted", { to });
+//         });
+
+//         socket.on("deny-call", ({ to }) => {
+//             console.log("call denied by ", socket.user, " from ", to);
+//             io.to(users[to]).emit("call-denied", { to });
+//         });
+
+//         socket.on("leave-call", ({ to }) => {
+//             console.log("left call message by ", socket.user, " from ", to);
+//             io.to(users[to]).emit("left-call", { to });
+//         });
+
+//         socket.on("offer", ({ to, offer }) => {
+//             console.log("offer from ", socket.user, " to ", to);
+//             io.to(users[to]).emit("offer", { to, offer });
+//         });
+
+//         socket.on("offer-answer", ({ to, answer }) => {
+//             console.log("offer answer from ", socket.user, " to ", to);
+//             io.to(users[to]).emit("offer-answer", { to, answer });
+//         });
+
+//         socket.on("ice-candidate", ({ to, candidate }) => {
+//             console.log("ice candidate from ", socket.user, " to ", to);
+//             io.to(users[to]).emit("ice-candidate", { to, candidate });
+//         });
+
+   
+        
+
+//         socket.on("disconnect", (reason) => {
+//             delete users[socket.user];
+//             Object.keys(users).forEach(user => {
+//                 io.to(users[user]).emit("user-left", { user: socket.user });
+//             });
+//             console.log("a socket disconnected ", socket.user);
+//         });
+//     });
+// }
+
+// module.exports = { socketServer };
+
+
 const { Server } = require("socket.io");
 
 function socketServer(server) {
@@ -122,55 +213,52 @@ function socketServer(server) {
         // Define socket event handlers
         socket.on('start-call', ({ to }) => {
             console.log("initiating call request to ", to);
-            io.to(users[to]).emit("incoming-call", { from: socket.user });
+            to.forEach(recipient => {
+                if (users[recipient]) {
+                    io.to(users[recipient]).emit("incoming-call", { from: socket.user });
+                } else {
+                    console.log("User not found:", recipient);
+                }
+            });
+
+            console.log("Total users in call:", to.length);
         });
 
         socket.on("accept-call", ({ to }) => {
             console.log("call accepted by ", socket.user, " from ", to);
-            io.to(users[to]).emit("call-accepted", { to });
+            io.to(users[to]).emit("call-accepted", { to: socket.user });
         });
 
         socket.on("deny-call", ({ to }) => {
             console.log("call denied by ", socket.user, " from ", to);
-            io.to(users[to]).emit("call-denied", { to });
+            io.to(users[to]).emit("call-denied", { to: socket.user });
         });
 
         socket.on("leave-call", ({ to }) => {
             console.log("left call message by ", socket.user, " from ", to);
-            io.to(users[to]).emit("left-call", { to });
+            io.to(users[to]).emit("left-call", { to: socket.user });
         });
 
         socket.on("offer", ({ to, offer }) => {
             console.log("offer from ", socket.user, " to ", to);
-            io.to(users[to]).emit("offer", { to, offer });
+            to.forEach(recipient => {
+                if (users[recipient]) {
+                    io.to(users[recipient]).emit("offer", { to: recipient, offer });
+                } else {
+                    console.log("User not found:", recipient);
+                }
+            });
         });
 
         socket.on("offer-answer", ({ to, answer }) => {
             console.log("offer answer from ", socket.user, " to ", to);
-            io.to(users[to]).emit("offer-answer", { to, answer });
+            io.to(users[to]).emit("offer-answer", { from: socket.user, answer });
         });
 
         socket.on("ice-candidate", ({ to, candidate }) => {
             console.log("ice candidate from ", socket.user, " to ", to);
-            io.to(users[to]).emit("ice-candidate", { to, candidate });
+            io.to(users[to]).emit("ice-candidate", { from: socket.user, candidate });
         });
-
-        socket.on("join-call", ({ callId, usersToAdd }) => {
-            // Check if the call exists and the user has permission to join
-            if (users.hasOwnProperty(callId)) {
-                // Broadcast to all users in the call room to add the new user
-                usersToAdd.forEach(user => {
-                    io.to(users[user]).emit("user-joined-call", { user: socket.user });
-                    socket.join(callId);
-                });
-                // Notify the new users that they have successfully joined the call
-                io.to(usersToAdd).emit("joined-call", { callId });
-            } else {
-                // Notify the user that the call does not exist or they don't have permission to join
-                io.to(socket.user).emit("call-not-found", { callId });
-            }
-        });
-        
 
         socket.on("disconnect", (reason) => {
             delete users[socket.user];
@@ -183,6 +271,7 @@ function socketServer(server) {
 }
 
 module.exports = { socketServer };
+
 
 
 
