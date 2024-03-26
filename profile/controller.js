@@ -213,13 +213,10 @@ const deleteProfile = asyncHandler(async (req, res) => {
 //  @access :  Public
 const getAllUser = asyncHandler(async (req,res)=>{
   try{
-   
-
-    const allUser = await Profile.find({ contact:{$exists: true, $ne: null}},{userId:1 , contact:1, lastname:1, firstname:1, _id:0}).populate('userId').lean();
-  
-  
-
-    return res.status(200).json({allUser})
+    const allUser = await Profile.find().populate('userId').lean();
+    const allUserFiltered = await allUser?.filter(item=>item?.userId?.type === 'guest');
+     console.log("#$343434" ,allUserFiltered )
+    return res.status(200).json({data:allUserFiltered})
 
   } catch(error){
     return res.status(500).json({Error:error.message})

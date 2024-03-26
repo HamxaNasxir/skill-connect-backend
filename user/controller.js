@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("./model.js");
 const generateToken = require("../utils/generateToken.js");
+const Profile = require("../profile/model.js");
 
 //  @desc   :  Register user
 //  @Route  :  POST /users
@@ -177,31 +178,10 @@ const updateAddress = asyncHandler(async (req, res) => {
     }
 })
 
-const getAllUser = asyncHandler(async (req,res)=>{
+const GetAllUsers = asyncHandler(async (req,res)=>{
     try{
-      const currentUserId = req.params.id;
-  
-      const allUser = await Profile.find({userId:{$exists: true, $ne: currentUserId}, contact:{$exists: true}},{userId:1 , contact:1, lastname:1, firstname:1, _id:0}).populate('userId').lean();
-  
-      const allUserFiltered = await allUser?.filter(item=>item?.userId?.type === 'guest');
-  
-      const finalData = await Promise.all(allUserFiltered?.map(async (item) => {
-        const chat = await ChatModel.findOne({
-          members: { $all: [currentUserId, item?.userId] }
-        }).lean();
-      
-        return {
-          userId: item?.userId?._id ||  null,
-          type: item?.userId?.type,
-          firstname: item?.firstname || null,
-          lastname: item?.lastname || null,
-          contact: item?.contact || null,
-          chatId: chat ? chat._id : null
-        };
-      }));
-      
-  
-      return res.status(200).json({data:finalData})
+        const allUser = await User.find({type:"guest"}).lean();
+      return res.status(200).json({data:allUser})
   
     } catch(error){
       return res.status(500).json({Error:error.message})
@@ -238,5 +218,5 @@ module.exports = {
     updateLocation,
     updateAddress,
     updateStripeCard,
-    getAllUser
+    GetAllUsers
 }
