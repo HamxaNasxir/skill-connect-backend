@@ -47,6 +47,14 @@ const userSchema = mongoose.Schema(
     stripeCard:{
       type: String,
       default: null
+    },
+    otp:{
+      type: String,
+      default: null
+    },
+    otp_verify:{
+      type: Boolean,
+      default: false
     }
   },
   {

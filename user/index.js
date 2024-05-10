@@ -11,7 +11,10 @@ const {
     updateLocation,
     updateAddress,
     updateStripeCard,
-    GetAllUsers
+    GetAllUsers,
+    forgetPassword,
+    TokenGet,
+    verifyOtp
 } = controller;
 
 // making the routes
@@ -23,5 +26,8 @@ router.put("/location", updateLocation);
 router.put("/address", updateAddress);
 router.put("/card", updateStripeCard);
 router.get("/allusers", GetAllUsers);
+router.post("/forgot-password" , forgetPassword)
+router.post("/reset-password" , TokenGet)
+router.post("/otp-verify" , verifyOtp)
 
 module.exports = router;

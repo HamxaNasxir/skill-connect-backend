@@ -149,27 +149,22 @@ const getProfileForHomePage = asyncHandler(async (req, res) => {
 
 
 //  @desc   :  Update Profile
-//  @Route  :  PUT /profile/:id
+//  @Route  :  PUT /profiles/:id
 //  @access :  Public
 const updateProfiles = asyncHandler(async (req, res) => {
   const id = req.params.id;
-  // const picture = req.file?.filename;
-
-  const profile = await Profile.updateOne(
-    { _id: id },
+  const profile = await Profile.updateOne({ _id: id },
     {
       $set: { ...req.body },
       // $set: { ...req.body, picture },
     },
     { new: true }
   );
-
   if (!profile) {
     res.status(400);
     throw new Error("Profile Not Found");
   }
-
-  res.status(200).json("Profile has been updated!");
+  res.status(200).json("Profile Has Been Updated!");
 });
 
 //  @desc   :  Update Profile

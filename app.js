@@ -27,6 +27,8 @@ const contractModule = require("./contract");
 const settingModule = require("./settings");
 const videoModule = require("./VideoCall")
 const adminModule = require("./admin")
+const paymentModule = require("./payment")
+const withdrewModule = require("./withdrew")
 
 var app = express();
 const server = require("http").createServer(app);
@@ -65,6 +67,8 @@ app.use("/contracts", contractModule);
 app.use("/settings", settingModule);
 app.use("/call", videoModule)
 app.use("/admin", adminModule)
+app.use("/payments", paymentModule)
+app.use("/withdrew" , withdrewModule)
 
 app.options("*", cors(corsOptions));
 

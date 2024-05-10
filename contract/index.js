@@ -7,12 +7,14 @@ createContract,
 getContract,
 contractDecision,
 getInvitations,
-getContractByUserID
+getContractByUserID,
+getOverallOrders
 } = controller;
 
 router.route("/").post(createContract).put(contractDecision);
 router.get("/:id", getInvitations)
 router.get("/:status/:id",getContract)
 router.get("/chat/:userId/:clientId",getContractByUserID)
+router.get("/overallcontracts/client/:id" , getOverallOrders)
 
 module.exports = router;

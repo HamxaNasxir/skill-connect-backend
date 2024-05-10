@@ -2,7 +2,19 @@ const asyncHandler = require("express-async-handler");
 const User = require("./model.js");
 const generateToken = require("../utils/generateToken.js");
 const Profile = require("../profile/model.js");
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+        user: "beautypalmist@gmail.com", // generated ethereal user
+        pass: "yucshktuqvvvuprd", // generated ethereal password
+    },
+});
 //  @desc   :  Register user
 //  @Route  :  POST /users
 //  @access :  Public
@@ -209,6 +221,65 @@ const updateStripeCard = asyncHandler(async (req, res) => {
     }
 })
 
+const forgetPassword = asyncHandler(async (req , res)=>{
+    const userEmail = req.body.email;
+    const user = await User.find({ email:userEmail})
+    if(user)
+    {
+        // Generate a unique OTP 
+        const token = crypto.randomInt(1000, 10000).toString();
+        await User.updateOne({ email: userEmail }, { otp: token , otp_verify:false });
+        transporter.sendMail({
+          from: 'Skill-Connect Reset Password <beautypalmist@gmail.com>',
+          to: userEmail,
+          subject: 'Password Reset',
+          text: `Your OTP: ${token}`
+        }, (err) => {
+          if (err) {
+            console.error('Error sending email:', err);
+            res.status(500).send('Error sending email');
+          } else {
+            res.send('OTP Sent Successfully');
+          }
+        });
+     }
+   
+    else {
+        return res.status(401).json({Error:"User Not Found"})
+    }
+ 
+})
+
+const verifyOtp = asyncHandler((async (req , res)=>{
+    const { otp , email } = req.body
+  
+    const token_checker = await User.findOne({ otp: otp, email: email });
+    if(token_checker){
+
+        await User.updateOne({ email: email }, { otp_verify:true });
+        res.status(200).send('OTP Verified');
+    }
+    else{
+        res.status(400).send('OTP Invalid');
+    }
+}))
+
+ // Route for handling password reset
+ const TokenGet = asyncHandler(async (req , res)=>{
+    const { password , email  } = req.body
+    const hashedPassword = await bcrypt.hash(password, 10); 
+    const token_checker = await User.findOne({email:email , otp_verify:true });
+    if(token_checker){
+       
+        await User.updateOne({ email: email }, { password: hashedPassword });
+        res.send('Password reset Successfully');
+    }
+    else{
+        return res.status(401).json({Error:"User Not Found"});
+    }
+ })
+
+
 //  Exporting the routes
 module.exports = {
     registerUser,
@@ -218,5 +289,8 @@ module.exports = {
     updateLocation,
     updateAddress,
     updateStripeCard,
-    GetAllUsers
+    GetAllUsers,
+    forgetPassword,
+    TokenGet,
+    verifyOtp
 }

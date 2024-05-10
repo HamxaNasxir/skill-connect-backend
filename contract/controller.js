@@ -27,8 +27,6 @@ const createContract = asyncHandler(async(req,res)=>{
 //  @access :  Public
 const getContract = asyncHandler(async (req, res) => {
     const { status,id } = req.params;
-
-
     let filterStatus;
 
     switch (status) {
@@ -152,10 +150,27 @@ const contractDecision = asyncHandler(async(req, res)=>{
 
 })
 
+//  @desc   :  Get Contract ClientId
+//  @Route  :  GET /overallcontracts/client/:id
+//  @access :  Public
+const getOverallOrders = asyncHandler(async(req, res)=>{
+    const clientId = req.params.id 
+
+    try{
+        const contract = await Contract.find({clientId:clientId}).populate({path:"jobId", populate: "userId"}).sort({createdAt:-1}).exec();
+        res.status(200).json(contract)
+
+    } catch(error){
+        return res.status(500).json(error.message)
+    }
+
+})
+
 module.exports = {
     createContract,
     getContract,
     contractDecision,
     getInvitations,
-    getContractByUserID
+    getContractByUserID,
+    getOverallOrders
 }
